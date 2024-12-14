@@ -22,21 +22,30 @@ class ApiService {
     }
   }
 
-  static Future<void> fetchData(String? token) async {
-    final url = Uri.parse('https://std30.beaupeyrat.com/api/docs');
+  static Future<List<dynamic>> fetchData(String token) async {
+  final url = Uri.parse('https://std30.beaupeyrat.com/api/tweets'); // Vérifiez l'URL complète
+  final response = await http.get(
+    url,
+    headers: {
+      'Authorization': 'Bearer $token',
+      'Content-Type': 'application/json',
+    },
+  );
 
-    final response = await http.get(
-      url,
-      headers: {
-        'Authorization': 'Bearer $token',
-        'Content-Type': 'application/json',
-      },
-    );
+  print('Réponse brute: ${response.body}'); // Affiche la réponse JSON brute pour vérifier
 
-    if (response.statusCode == 200) {
-      print(jsonDecode(response.body));
+  if (response.statusCode == 200) {
+    final jsonResponse = jsonDecode(response.body);
+
+    // Vérifiez si la clé "member" existe et contient les tweets
+    if (jsonResponse is Map && jsonResponse.containsKey('member')) {
+      return jsonResponse['member'] as List<dynamic>;
     } else {
-      print('Erreur: ${response.statusCode}');
+      throw Exception('Format de réponse inattendu : clé "member" manquante');
     }
+  } else {
+    throw Exception('Erreur de récupération des tweets: ${response.statusCode}');
   }
+}
+
 }

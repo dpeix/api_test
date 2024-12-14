@@ -1,3 +1,4 @@
+import 'package:api_test/screens/data_screen.dart';
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import '../services/token_service.dart';
@@ -23,6 +24,10 @@ class _LoginScreenState extends State<LoginScreen> {
 
     if (token != null) {
       await TokenService.saveToken(token);
+      Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const DataScreen()),
+    );
 
       setState(() {
         _token = token;
