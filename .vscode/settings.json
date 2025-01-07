@@ -1,3 +1,4 @@
 {
-    "cmake.sourceDirectory": "D:/api_test/api_test/windows"
+    "cmake.sourceDirectory": "D:/api_test/api_test/windows",
+    "cmake.ignoreCMakeListsMissing": true
 }
