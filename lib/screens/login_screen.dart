@@ -17,28 +17,40 @@ class _LoginScreenState extends State<LoginScreen> {
   String? _token;  // Variable pour afficher le token
 
   Future<void> _login() async {
-    final token = await ApiService.fetchToken(
-      _usernameController.text,
-      _passwordController.text,
-    );
+    print('Tentative de connexion...');
+    print('Username: ${_usernameController.text}');
+    print('Password: ${_passwordController.text}');
+    try {
+      final token = await ApiService.fetchToken(
+        _usernameController.text,
+        _passwordController.text,
+      ).timeout(const Duration(seconds: 10));
 
-    if (token != null) {
-      await TokenService.saveToken(token);
-      Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => const DataScreen()),
-    );
+      if (token != null) {
+        print('Token reçu: $token');
+        await TokenService.saveToken(token);
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const DataScreen()),
+        );
 
-      setState(() {
-        _token = token;
-      });
+        setState(() {
+          _token = token;
+        });
 
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Connexion réussie !')),
+        );
+      } else {
+        print('Erreur: Token est null');
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Erreur de connexion.')),
+        );
+      }
+    } catch (e) {
+      print('Erreur: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Connexion réussie !')),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Erreur de connexion.')),
+        SnackBar(content: Text('Erreur: ${e.toString()}')),
       );
     }
   }
